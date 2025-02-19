@@ -1,0 +1,19 @@
+*{
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", serif;
+  scroll-behavior: smooth;
+}
+a{
+  text-decoration: none;
+}
+.crypto_row:hover{
+  background-color: rgb(223, 235, 235);
+  transition: 0.3s all;
+  cursor: pointer;
+}
+.css-1wxkzlj-MuiTabs-flexContainer{
+  justify-content: space-around;
+}
