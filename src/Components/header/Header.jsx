@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import AppBar from "@mui/material/AppBar";
 import {
+  AppBar,
   Avatar,
   Box,
   Button,
@@ -16,21 +16,20 @@ import {
   TextField,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
 import PersonIcon from '@mui/icons-material/Person';
+import { Link } from "react-router-dom";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import Tab from "@mui/material/Tab";
 import TabPanel from "@mui/lab/TabPanel";
-import { ThemeProvider } from "@emotion/react";
-import { useCryptocontext } from "../../Context/CryptoContext";
-import { Link } from "react-router-dom";
-import FormControlContext from "@mui/material/FormControl/FormControlContext";
 import GoogleButton from "react-google-button";
 import { auth } from "../../config/FirebaseConfif";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useCryptocontext } from "../../Context/CryptoContext";
 import DrawerComponent from "../drawer/Drawer";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 const style = {
   position: "absolute",
@@ -53,50 +52,45 @@ const Header = () => {
   const [signupemail, setsignupEmail] = useState("");
   const [signuppassword, setsignupPassword] = useState("");
   const [signupconfirmpassword, setsignupConfirmPassword] = useState("");
-  const { currency, setCurrency, user,setUser, setAlert, toggleDrawer, opendrawer } = useCryptocontext();
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
 
+  const { currency, setCurrency, user, setUser, setAlert, toggleDrawer, opendrawer } = useCryptocontext();
+
+  const isMobile = useMediaQuery('(max-width:600px)');
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const handleSignup=async()=>{
-    if( !signupemail || !signuppassword || !signupconfirmpassword ){
+
+  const handleSignup = async () => {
+    if (!signupemail || !signuppassword || !signupconfirmpassword) {
       setAlert({
         open: true,
         message: "Please fill in all fields",
         type: "error",
-      })
-    }
-    else if(signuppassword !== signupconfirmpassword){
+      });
+    } else if (signuppassword !== signupconfirmpassword) {
       setAlert({
         open: true,
         message: "Passwords do not match",
         type: "error",
-        })
-    }
-    else if( signuppassword.length < 8 ){
+      });
+    } else if (signuppassword.length < 8) {
       setAlert({
         open: true,
         message: "Password must be at least 8 characters",
         type: "error",
-        })
-    }
-    else{
+      });
+    } else {
       try {
-        const result = await createUserWithEmailAndPassword(
-          auth,
-          signupemail,
-          signuppassword
-        );
-        
+        const result = await createUserWithEmailAndPassword(auth, signupemail, signuppassword);
         setAlert({
           open: true,
           message: `Sign Up Successful. Welcome ${result.user.email}`,
           type: "success",
         });
-  
         handleClose();
       } catch (error) {
         setAlert({
@@ -104,32 +98,27 @@ const Header = () => {
           message: error.message,
           type: "error",
         });
-        return;
       }
     }
+  };
 
-  }
-  const handleLogin=async()=>{
-    if(!email || !password){
+  const handleLogin = async () => {
+    if (!email || !password) {
       setAlert({
         open: true,
         message: "Please fill in all fields",
         type: "error",
-      })
-    }
-    else{
+      });
+    } else {
       try {
         const result = await signInWithEmailAndPassword(auth, email, password);
-        setUser( result.user);
-        console.log(result);
-        
-      setAlert({
-        open: true,
-        message: `Sign Up Successful. Welcome ${result.user.email}`,
-        type: "success",
-      });
-
-      handleClose();
+        setUser(result.user);
+        setAlert({
+          open: true,
+          message: `Login Successful. Welcome ${result.user.email}`,
+          type: "success",
+        });
+        handleClose();
       } catch (error) {
         setAlert({
           open: true,
@@ -138,37 +127,35 @@ const Header = () => {
         });
       }
     }
-  }
+  };
+
   const provider = new GoogleAuthProvider();
   const signInWithGoogle = () => {
-    signInWithPopup(auth,provider)
-    .then((res) => {
-      setAlert({
-        open: true,
-        message: `Sign Up Successful. Welcome ${res.user.email}`,
-        type: "success",
+    signInWithPopup(auth, provider)
+      .then((res) => {
+        setAlert({
+          open: true,
+          message: `Sign Up Successful. Welcome ${res.user.email}`,
+          type: "success",
+        });
+        handleClose();
+      })
+      .catch((error) => {
+        setAlert({
+          open: true,
+          message: error.message,
+          type: "error",
+        });
       });
-      
-      handleClose();
-    })
-    .catch((error) => {
-      setAlert({
-        open: true,
-        message: error.message,
-        type: "error",
-      });
-      return;
-    });
   };
-  
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#00141d", // Dark gray/blackish background for AppBar
+        main: "#00141d",
       },
       secondary: {
-        main: "#fff", // White color for text and icons
+        main: "#fff",
       },
     },
     components: {
@@ -186,22 +173,22 @@ const Header = () => {
         styleOverrides: {
           root: {
             "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#fff", // Border color
+              borderColor: "#fff",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#fff", // Border color on hover
+              borderColor: "#fff",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#fff", // Border color when focused
+              borderColor: "#fff",
             },
-            color: "#fff", // Text color
+            color: "#fff",
           },
         },
       },
       MuiSvgIcon: {
         styleOverrides: {
           root: {
-            fill: "white", // Dropdown arrow color
+            fill: "white",
           },
         },
       },
@@ -210,13 +197,7 @@ const Header = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar
-        color="primary"
-        sx={{
-          paddingBlock: "8px",
-          backgroundColor: theme.palette.primary.main,
-        }}
-      >
+      <AppBar color="primary" position="static">
         <Toolbar>
           <Container
             maxWidth="lg"
@@ -224,162 +205,142 @@ const Header = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
+              flexDirection: isMobile ? "column" : "row",
+              gap: isMobile ? 2 : 0,
+              py: isMobile ? 2 : 0,
             }}
           >
-            <Link to="/">
-              <Typography fontWeight="bolder" variant="h5" color="#ecf0f1">
-                <span style={{ color: "#ffd32a", fontWeight: "bolder" }}>
-                  {" "}
-                  Crypto{" "}
-                </span>{" "}
-                Tracker
+            <Link to="/" style={{ textDecoration: "none" }}>
+              <Typography variant="h5" fontWeight="bold" color="#ecf0f1">
+                <span style={{ color: "#ffd32a" }}>Crypto</span> Tracker
               </Typography>
             </Link>
-            <Box sx={{ display: "flex", alignItems: "center", columnGap:"30px" }}>
+
+            <Stack direction="row" spacing={2} alignItems="center">
               <FormControl size="small">
-                <InputLabel id="demo-select-small-label">Currency</InputLabel>
+                <InputLabel id="currency-select-label">Currency</InputLabel>
                 <Select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  labelId="demo-select-small-label"
+                  labelId="currency-select-label"
                   label="Currency"
-                  sx={{ width: "120px" }}
-                  id="demo-select-small"
+                  sx={{ width: 100 }}
                 >
-                  <MenuItem value={"INR"}>INR</MenuItem>
-                  <MenuItem value={"USD"}>USD</MenuItem>
+                  <MenuItem value="INR">INR</MenuItem>
+                  <MenuItem value="USD">USD</MenuItem>
                 </Select>
               </FormControl>
+
               {user ? (
                 <>
-                <Avatar src={user?.photoURL ? user?.photoURL.replace("=s96-c", "")  : <PersonIcon />} sx={{cursor:"pointer"}} onClick={toggleDrawer(true)} />
-                <Drawer sx={{width:350}} anchor="right" open={opendrawer} onClose={toggleDrawer(false)}>
-                {DrawerComponent()}
-              </Drawer>
-              </>
+                  <Avatar
+                    src={user?.photoURL ? user?.photoURL.replace("=s96-c", "") : undefined}
+                    sx={{ cursor: "pointer" }}
+                    onClick={toggleDrawer(true)}
+                  >
+                    {!user?.photoURL && <PersonIcon />}
+                  </Avatar>
+                  <Drawer anchor="right" open={opendrawer} onClose={toggleDrawer(false)}>
+                    {DrawerComponent()}
+                  </Drawer>
+                </>
               ) : (
                 <Button
-                  onClick={handleOpen}
-                  sx={{
-                    ml: "20px",
-                    backgroundColor: "#ffd32a",
-                    color: "black",
-                    px: "30px",
-                    fontWeight: "500",
-                  }}
                   variant="contained"
+                  sx={{ backgroundColor: "#ffd32a", color: "black", px: 4, fontWeight: "500" }}
+                  onClick={handleOpen}
                 >
                   Login
                 </Button>
               )}
-            </Box>
+            </Stack>
           </Container>
         </Toolbar>
       </AppBar>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+
+      <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Box sx={{ width: "100%", typography: "body1" }}>
-            <TabContext value={value}>
-              <Box
-                sx={{
-                  borderBottom: 1,
-                  borderColor: "divider",
-                  "& .MuiTabs-indicator": {
-                    backgroundColor: "white", // Sets bottom border to white
-                  },
-                  "& .Mui-selected": {
-                    color: "white", // Ensures selected tab text is white
-                  },
-                }}
+          <TabContext value={value}>
+            <Box
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                "& .MuiTabs-indicator": {
+                  backgroundColor: "white",
+                },
+              }}
+            >
+              <TabList
+                onChange={handleChange}
+                variant="fullWidth"
+                textColor="inherit"
               >
-                <TabList
-                  sx={{ justifyContent: "space-around" }}
-                  onChange={handleChange}
-                  aria-label="lab API tabs example"
-                  textColor="inherit"
+                <Tab label="Login" value="1" />
+                <Tab label="Signup" value="2" />
+              </TabList>
+            </Box>
+
+            <TabPanel value="1">
+              <Stack spacing={2}>
+                <TextField
+                  label="Email"
+                  type="email"
+                  variant="outlined"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <TextField
+                  label="Password"
+                  type="password"
+                  variant="outlined"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#ffd32a", color: "black" }}
+                  onClick={handleLogin}
                 >
-                  <Tab label="Login" value="1" />
-                  <Tab label="Signup" value="2" />
-                </TabList>
-              </Box>
-              <TabPanel value="1">
-                <Stack spacing={2}>
-                  <FormControlContext>
-                    <TextField
-                     
-                      label="Email"
-                      type="email"
-                      variant="outlined"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <TextField
-                      
-                      type="password"
-                      label="Password"
-                      variant="outlined"
-                      value={password}
-                      onChange={(e)=>setPassword(e.target.value)}
-                    />
-                  </FormControlContext>
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: "#ffd32a", color: "black" }}
-                    onClick={handleLogin}
-                  >
-                    Login
-                  </Button>
-                  <Box textAlign="center">Or</Box>
-                  <GoogleButton
-                    style={{width:"100%"}}
-                    onClick={signInWithGoogle}
-                  />
-                </Stack>
-              </TabPanel>
-              <TabPanel value="2">
-                <Stack spacing={2}>
-                  <FormControlContext>
-                    <TextField
-                      id="outlined-basic"
-                      type="email"
-                      label="Email"
-                      variant="outlined"
-                      value={signupemail}
-                      onChange={(e) => setsignupEmail(e.target.value)}
-                    />
-                    <TextField
-                      id="outlined-basic"
-                      label="Password"
-                      type="password"
-                      variant="outlined"
-                      value={signuppassword}
-                      onChange={e => setsignupPassword(e.target.value)}
-                    />
-                    <TextField
-                      id="outlined-basic"
-                      type="password"
-                      label="Confirm Password"
-                      variant="outlined"
-                      value={signupconfirmpassword}
-                      onChange={e => setsignupConfirmPassword(e.target.value)}
-                    />
-                  </FormControlContext>
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: "#ffd32a", color: "black" }}
-                    onClick={handleSignup}
-                  >
-                    Signup
-                  </Button>
-                </Stack>
-              </TabPanel>
-            </TabContext>
-          </Box>
+                  Login
+                </Button>
+                <Box textAlign="center">Or</Box>
+                <GoogleButton style={{ width: "100%" }} onClick={signInWithGoogle} />
+              </Stack>
+            </TabPanel>
+
+            <TabPanel value="2">
+              <Stack spacing={2}>
+                <TextField
+                  label="Email"
+                  type="email"
+                  variant="outlined"
+                  value={signupemail}
+                  onChange={(e) => setsignupEmail(e.target.value)}
+                />
+                <TextField
+                  label="Password"
+                  type="password"
+                  variant="outlined"
+                  value={signuppassword}
+                  onChange={(e) => setsignupPassword(e.target.value)}
+                />
+                <TextField
+                  label="Confirm Password"
+                  type="password"
+                  variant="outlined"
+                  value={signupconfirmpassword}
+                  onChange={(e) => setsignupConfirmPassword(e.target.value)}
+                />
+                <Button
+                  variant="contained"
+                  sx={{ backgroundColor: "#ffd32a", color: "black" }}
+                  onClick={handleSignup}
+                >
+                  Signup
+                </Button>
+              </Stack>
+            </TabPanel>
+          </TabContext>
         </Box>
       </Modal>
     </ThemeProvider>

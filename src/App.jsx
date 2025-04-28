@@ -11,8 +11,8 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <div style={{ backgroundColor: "#f7f1e3", height: "100%" }}>
           <Header />
+        <div style={{ backgroundColor: "#f7f1e3", height: "100%" }}>
             <Suspense fallback={<div><LinearProgress sx={{mt:"30px"}} /></div>}>
           <Routes>
             <Route path="/" element={<Home />} exact />

@@ -12,6 +12,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import { useCryptocontext } from "../../Context/CryptoContext";
@@ -24,6 +25,8 @@ const CoinsTable = () => {
 
   const { currency, symbol, coins, loading, Allcoins } = useCryptocontext();
   const navigate = useNavigate();
+
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     Allcoins(currency);
@@ -54,12 +57,13 @@ const CoinsTable = () => {
           justifyContent: "center",
           backgroundColor: "white",
           boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
+          padding: isMobile ? "20px" : "40px",
         }}
       >
         <Typography
           mt={3}
-          variant="h4"
-          sx={{ marginBottom: "20px", color: "#2c2c54" }}
+          variant={isMobile ? "h5" : "h4"}
+          sx={{ marginBottom: "20px", color: "#2c2c54", textAlign: "center" }}
         >
           Crypto Prices By Market Price
         </Typography>
@@ -71,11 +75,13 @@ const CoinsTable = () => {
           sx={{ width: "100%", marginBottom: "20px" }}
         />
       </Container>
+
       <Container
         py={3}
         sx={{
           backgroundColor: "white",
           boxShadow: "0px 0px 10px rgba(0,0,0,0.2)",
+          overflowX: "auto", // Make table scrollable horizontally on mobile
         }}
       >
         {loading ? (
@@ -84,7 +90,7 @@ const CoinsTable = () => {
           </Box>
         ) : (
           <>
-            <TableContainer>
+            <TableContainer sx={{ minWidth: isMobile ? "600px" : "100%" }}>
               <Table aria-label="simple table">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: "#00141d" }}>
@@ -120,6 +126,7 @@ const CoinsTable = () => {
                         onClick={() => navigate(`coin/${coin.id}`)}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
+                          cursor: "pointer",
                         }}
                         className="crypto_row"
                       >
@@ -133,36 +140,41 @@ const CoinsTable = () => {
                             <img
                               src={coin.image}
                               alt={coin.name}
-                              style={{ width: "80px", height: "80px" }}
+                              style={{
+                                width: isMobile ? "40px" : "80px",
+                                height: isMobile ? "40px" : "80px",
+                              }}
                             />
                             <Stack>
                               <Typography
                                 sx={{ color: "#2c2c54" }}
                                 fontWeight="bold"
-                                variant="h6"
+                                variant={isMobile ? "subtitle2" : "h6"}
                               >
                                 {coin.symbol.toUpperCase()}
                               </Typography>
-                              <Typography variant="subtitle1">
+                              <Typography variant="caption">
                                 {coin.name}
                               </Typography>
                             </Stack>
                           </Stack>
                         </TableCell>
+
                         <TableCell
                           sx={{
                             fontWeight: "bold",
-                            fontSize: "17px",
+                            fontSize: isMobile ? "14px" : "17px",
                             color: "#1e272e",
                           }}
                           align="right"
                         >
-                          {coin.current_price}
+                          {symbol} {numberWithCommas(coin.current_price)}
                         </TableCell>
+
                         <TableCell
                           sx={{
                             fontWeight: "bold",
-                            fontSize: "17px",
+                            fontSize: isMobile ? "14px" : "17px",
                             color:
                               coin.price_change_percentage_24h > 0
                                 ? "#05c46b"
@@ -170,12 +182,13 @@ const CoinsTable = () => {
                           }}
                           align="right"
                         >
-                          {coin.price_change_percentage_24h}%
+                          {coin.price_change_percentage_24h.toFixed(2)}%
                         </TableCell>
+
                         <TableCell
                           sx={{
                             fontWeight: "bold",
-                            fontSize: "17px",
+                            fontSize: isMobile ? "14px" : "17px",
                             color: "#1e272e",
                           }}
                           align="right"
@@ -191,6 +204,7 @@ const CoinsTable = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+
             <Container sx={{ py: "20px" }}>
               <Stack
                 direction="row"
@@ -202,6 +216,7 @@ const CoinsTable = () => {
                   page={page}
                   onChange={handlePage}
                   aria-label="Pagination"
+                  size={isMobile ? "small" : "medium"}
                 />
               </Stack>
             </Container>

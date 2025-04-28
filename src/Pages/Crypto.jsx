@@ -161,69 +161,92 @@ const Crypto = () => {
     <>
       <Box
         className="crypto_page"
-        sx={{ display: "flex", alignItems: "center", pt: "50px", height: "100vh" }}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          pt: "50px",
+          height: "auto",
+          flexDirection: { xs: "column", sm: "row" },
+        }}
       >
         <Stack
           direction="column"
           alignItems="center"
           justifyContent="center"
           className="crypto_Info"
-          width="30%"
+          width={{ xs: "100%", sm: "30%" }}
           px={3}
-          borderRight={2}
+          borderRight={{ sm: 2 }}
           borderColor="#28282B"
+          mb={{ xs: 4, sm: 0 }}
         >
-          <img src={coin?.image.large} alt="crypto" />
+          <img src={coin?.image.large} alt="crypto" width="100%" />
           <Typography
             gutterBottom
             variant="h4"
             component="h2"
             fontWeight="bold"
-            sx={{ color: "#28282B" }}
+            sx={{ color: "#28282B", textAlign: "center" }}
           >
             {coin?.name}
           </Typography>
-          <Typography gutterBottom variant="subtitle2" component="h2">
+          <Typography gutterBottom variant="subtitle2" component="h2" sx={{ textAlign: "center" }}>
             {coin?.description?.en
               ? coin.description.en.split(". ")[0]
               : "Description not available."}
           </Typography>
           <Box alignSelf="start">
             <Typography gutterBottom variant="h5" fontWeight="bold" sx={{ color: "#28282B" }}>
-              Rank: <span style={{fontSize:"18px",color:"#38893c"}}> {coin?.market_cap_rank}</span>
+              Rank: <span style={{ fontSize: "18px", color: "#38893c" }}> {coin?.market_cap_rank}</span>
             </Typography>
             <Typography gutterBottom variant="h5" fontWeight="bold" sx={{ color: "#28282B" }}>
-              Current price:
-             <span  style={{fontSize:"18px",color:"#38893c"}}>  {symbol}{" "} {coin?.market_data.current_price[currency.toLowerCase()]}</span>
+              Current price:{" "}
+              <span style={{ fontSize: "18px", color: "#38893c" }}>
+                {symbol} {coin?.market_data.current_price[currency.toLowerCase()]}
+              </span>
             </Typography>
             <Typography gutterBottom variant="h5" fontWeight="bold" sx={{ color: "#28282B" }}>
               Market Cap:{" "}
-              <span style={{fontSize:"18px",color:"#38893c"}}>{coin?.market_data.market_cap[currency.toLowerCase()]
-                .toString()
-                .slice(0, -6)}{" "} M</span>
+              <span style={{ fontSize: "18px", color: "#38893c" }}>
+                {coin?.market_data.market_cap[currency.toLowerCase()]
+                  .toString()
+                  .slice(0, -6)}{" "}
+                M
+              </span>
             </Typography>
-            { user &&
-            <Button sx={{
-                    backgroundColor: "#ffd32a",
-                    color: "black",
-                    px: "20px",
-                    fontWeight: "500",
-                    width:"100%"}} onClick={inWatchlist ? removeFromWatchlist :addToWatchlist } type="contained">{inWatchlist ? "Remove from watchlist" : "Add to watchlist"}</Button>}
+            {user && (
+              <Button
+                sx={{
+                  backgroundColor: "#ffd32a",
+                  color: "black",
+                  px: "20px",
+                  fontWeight: "500",
+                  width: "100%",
+                }}
+                onClick={inWatchlist ? removeFromWatchlist : addToWatchlist}
+                type="contained"
+              >
+                {inWatchlist ? "Remove from watchlist" : "Add to watchlist"}
+              </Button>
+            )}
           </Box>
         </Stack>
-        <Box width="70%" className="crypto_chart" px={3}>
+
+        <Box width={{ xs: "100%", sm: "70%" }} className="crypto_chart" px={3}>
           {/* Timeframe Buttons */}
-          <ButtonGroup sx={{ mb: 3 }}>
+          <ButtonGroup sx={{ mb: 3 }} fullWidth>
             {timeframes.map((time) => (
               <Button
                 key={time.value}
                 onClick={() => setTimeframe(time.value)}
                 variant={time.value === timeframe ? "contained" : "outlined"}
+                fullWidth
               >
                 {time.label}
               </Button>
             ))}
           </ButtonGroup>
+
           {/* Chart */}
           {chartData ? (
             <Line

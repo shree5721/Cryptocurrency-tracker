@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import Header from "../Components/header/Header";
+// import Header from "../Components/header/Header";
 import { LinearProgress } from "@mui/material";
 const CoinsTable = React.lazy(() =>
   import("../Components/coin table/CoinsTable")
@@ -9,7 +9,7 @@ const Banner = React.lazy(() => import("../Components/banner/Banner"));
 const Home = () => {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Suspense fallback={<LinearProgress sx={{width:"70%", margin:"50px auto"}} />} >
       <Banner />
       </Suspense>
